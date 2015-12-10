@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>demo-all</artifactId>
+		<groupId>net.demo</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>demo-web</artifactId>
+	<packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.demo</groupId>
+            <artifactId>demo-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- j2ee -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+	<!-- 不同的打包环境配置: test=开发/测试测试环境, product=生产环境;  -->
+	<!-- 开发环境命令方式: mvn clean install -Dmaven.test.skip=true -Pdev -->
+	<!-- 生产环境命令方式: mvn clean install -Dmaven.test.skip=true -Pproduction -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<env>dev</env>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>preproduction</id>
+			<properties>
+				<env>preproduction</env>
+			</properties>
+		</profile>
+		<profile>
+			<id>production</id>
+			<properties>
+				<env>production</env>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>edum100</finalName>
+		<filters>
+			<filter>src/main/filters/filter-${env}-env.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+</project>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tools>
+    <data type="boolean" key="xhtml" value="true"/>
+    <data type="boolean" key="isSimple" value="true"/>
+    <data type="number" key="version" value="2.0"/>
+    <data key="foo">this is foo</data>
+    <data key="bar">this is bar.</data>
+
+    <toolbox scope="request">
+        <!-- <tool key="toytool" class="ToyTool" restrictTo="index*"/> -->
+    </toolbox>
+    <!--自定义String Velocity模板工具-->
+    <toolbox scope="application">
+    <tool key="char" class="net.hunanst.common.util.tools.StringTools"/>
+</toolbox>
+
+    <toolbox scope="session">
+        <!-- <tool key="map" class="java.util.HashMap"/> -->
+    </toolbox>
+
+    <tool>
+        <key>date</key>
+        <scope>application</scope>
+        <class>org.apache.velocity.tools.generic.DateTool</class>
+    </tool>
+    <tool>
+        <key>math</key>
+        <scope>application</scope>
+        <class>org.apache.velocity.tools.generic.MathTool</class>
+    </tool>
+</tools>

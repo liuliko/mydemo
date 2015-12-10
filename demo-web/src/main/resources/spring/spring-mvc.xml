@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+
+
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+
+
+    <context:component-scan base-package="demo"/>
+    <!-- 引入属性文件 -->
+
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="false"/>
+        <property name="favorParameter" value="false"/>
+        <property name="ignoreAcceptHeader" value="false"/>
+        <property name="mediaTypes">
+            <value>
+                atom=application/atom+xml
+                html=text/html
+                json=application/json
+                *=*/*
+            </value>
+        </property>
+    </bean>
+
+
+    <!-- spring mvc Context的监听器 -->
+    <bean class="demo.listener.SpringListener"></bean>
+
+    <!-- 如果不配置或/**,将拦截所有的Controller -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="demo.interceptor.SecurityInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <mvc:resources mapping="/css/**" location="/css/"/>
+
+    <mvc:resources mapping="/js/**" location="/js/"/>
+
+
+
+
+    <!-- Jackson转换器 -->
+    <!-- 避免IE在ajax请求时，返回json出现下载 -->
+    <bean id="jacksonMessageConverter"
+          class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+                <value>text/plain;charset=UTF-8</value>
+                <value>application/json;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+    <!-- fastjson转换器 -->
+    <bean id="fastJsonHttpMessageConverter"
+          class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="fastJsonHttpMessageConverter"/>
+                <!-- json转换器 -->
+            </list>
+        </property>
+    </bean>
+    <!-- Resolves views selected for rendering by @Controllers to .html resources in the /WEB-INF/views directory -->
+    <!-- 视图解释类 -->
+    <bean id="velocityConfigurer"
+          class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/"/>
+        <property name="velocityProperties">
+            <props>
+                <prop key="input.encoding">utf-8</prop>
+                <prop key="output.encoding">utf-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- prefix先暂时置为空，因为velocity还有另外一个配置。 -->
+    <!-- 把.jsp修改位.vm模板格式，然后必须加入contentType这一项 -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".html"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <!-- 在模板页面取得session的相关信息 -->
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="toolboxConfigLocation" value="/WEB-INF/velocity-tools.xml"/>
+        <property name="viewClass" value="demo.controller.util.velocity.VelocityToolbox20View"/>
+    </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="32505856"/>
+        <!-- 上传文件大小限制为31M，31*1024*1024 -->
+        <property name="maxInMemorySize" value="4096"/>
+    </bean>
+
+
+    <!--Exception统一处理中心-->
+    <bean id="exceptionHandler" class="demo.exception.MyExceptionHandler"/>
+
+    <!--<import resource="spring-redis.xml"/>-->
+</beans>
